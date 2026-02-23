@@ -161,7 +161,7 @@ export default function TestPage() {
           />
           <WordCounter count={wordCount} />
 
-          <div className="mt-4 flex items-center gap-4">
+          <div className="mt-4 flex flex-wrap items-center gap-4">
             <button
               onClick={handleSubmit}
               disabled={submitting || wordCount === 0}
@@ -170,6 +170,19 @@ export default function TestPage() {
             >
               {submitting ? "採点中..." : "採点する"}
             </button>
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <div
+                role="switch"
+                aria-checked={seriousMode}
+                tabIndex={0}
+                onClick={() => setSeriousMode(!seriousMode)}
+                onKeyDown={(e) => { if (e.key === " " || e.key === "Enter") { e.preventDefault(); setSeriousMode(!seriousMode); } }}
+                className={`relative w-9 h-5 rounded-full transition-colors ${seriousMode ? "bg-blue-600" : "bg-gray-300"}`}
+              >
+                <div className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${seriousMode ? "translate-x-4" : ""}`} />
+              </div>
+              <span className="text-sm text-gray-600">{seriousMode ? "真面目モード" : "ジョークモード"}</span>
+            </label>
             {submitting && (
               <span className="text-sm text-gray-500">AI採点を実行しています...</span>
             )}
