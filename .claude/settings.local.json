@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tail:*)",
+      "Bash(sleep 5:*)",
+      "Bash(curl:*)",
+      "Bash(head:*)",
+      "mcp__codex-xhigh__codex",
+      "Skill(v0)",
+      "Bash(test:*)",
+      "Bash(git init:*)",
+      "Bash(cd:*)"
+    ]
+  }
+}
