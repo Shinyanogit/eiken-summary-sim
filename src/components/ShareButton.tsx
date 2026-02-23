@@ -7,12 +7,17 @@ interface ShareButtonProps {
   score: number;
   passed: boolean;
   certRef?: RefObject<CertificateHandle | null>;
+  content: number;
+  organization: number;
+  vocabulary: number;
+  grammar: number;
 }
 
-export default function ShareButton({ score, passed, certRef }: ShareButtonProps) {
+export default function ShareButton({ score, passed, certRef, content, organization, vocabulary, grammar }: ShareButtonProps) {
   const verdict = passed ? "合格" : "不合格";
-  const text = `英険1級 要約シュミレーターで ${score}/32 点（${verdict}）でした！ #英険要約シュミレーター #英検`;
-  const url = typeof window !== "undefined" ? window.location.origin : "";
+  const text = `英険1級 要約シュミレーターで ${score}/32 点（${verdict}）でした！\n\n#英険要約シュミレーター #英検`;
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const url = `${origin}/share?c=${content}&o=${organization}&v=${vocabulary}&g=${grammar}`;
   const tweetUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
 
   function canShareFiles(): boolean {

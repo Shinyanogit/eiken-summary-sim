@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-02-23 - OG Image Share System
+
+### Features
+- OG image API (`/api/og`): dynamically generates 1200x630 OGP images with scores
+  - Edge runtime, Noto Sans JP Bold font from Google Fonts CDN
+  - Cream background, navy border, 4-category score cards, total + pass/fail badge
+- Share page (`/share`): server-rendered page with `generateMetadata` for OG tags
+  - URL format: `/share?c=7&o=8&v=0&g=8`
+  - Displays score table and "自分も挑戦する" CTA button
+  - Twitter card: `summary_large_image` for rich link previews on X
+- ShareButton now generates share URLs pointing to `/share` page with score params
+  - X crawler fetches OG image from the share page's meta tags
+
+---
+
 ## 2026-02-23 (v1.0) - Initial Release
 
 ### Features

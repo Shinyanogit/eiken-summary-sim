@@ -6,7 +6,7 @@
 | Framework | Next.js 16 (App Router, Turbopack) |
 | UI | React 19, Tailwind CSS 4 |
 | AI | Gemini 2.5 Flash-Lite |
-| Image Gen | html2canvas-pro |
+| Image Gen | html2canvas-pro, next/og (ImageResponse) |
 | Hosting | Vercel (Hobby) |
 | Font | Noto Sans JP, Noto Serif, UnifrakturMaguntia |
 
@@ -50,6 +50,17 @@ Single POST endpoint. All scoring logic runs server-side.
 - `countFancyWords()`: server-side, duplicates counted, ~60 word list
 - `makeZeroScore()`: generates fake "word count violation" feedback
 
+### OG Image API (`/api/og`)
+- Edge runtime, `next/og` ImageResponse
+- Query params: `c`, `o`, `v`, `g` (each 0-8, clamped)
+- Generates 1200x630px PNG with score cards and pass/fail badge
+- Font: Noto Sans JP Bold (fetched from CDN, graceful fallback to sans-serif)
+
+### Share Page (`/share`)
+- Server component with `generateMetadata` for dynamic OG/Twitter meta tags
+- Points `og:image` and `twitter:image` to `/api/og?c=...&o=...&v=...&g=...`
+- Renders score summary with link to home page
+
 ## Client-Side Components
 
 ### Certificate (`Certificate.tsx`)
@@ -59,6 +70,7 @@ Single POST endpoint. All scoring logic runs server-side.
 - Design matches real Eiken certificate (border, colors, layout)
 
 ### ShareButton (`ShareButton.tsx`)
+- Generates share URL: `/share?c=X&o=X&v=X&g=X` (OGP-enabled page)
 - Synchronous `canShareFiles()` check (prevents async popup block)
 - Mobile: Web Share API with certificate PNG
 - PC: `about:blank` window pre-opened → X intent URL fallback

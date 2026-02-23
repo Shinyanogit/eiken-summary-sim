@@ -233,7 +233,15 @@ export default function ResultPage() {
 
       {/* Actions */}
       <div className="flex flex-wrap items-center gap-4">
-        <ShareButton score={total} passed={passed} certRef={certRef} />
+        <ShareButton
+          score={total}
+          passed={passed}
+          certRef={certRef}
+          content={result.content}
+          organization={result.organization}
+          vocabulary={result.vocabulary}
+          grammar={result.grammar}
+        />
         <a
           href="/"
           className="inline-flex items-center px-5 py-2.5 border text-sm rounded hover:bg-gray-50 transition-colors"
