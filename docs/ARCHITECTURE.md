@@ -47,9 +47,15 @@ Single POST endpoint. All scoring logic runs server-side.
 
 ### Scoring (`lib/scoring.ts`)
 - `countWords()`: whitespace split
-- `checkWordCountGate()`: quadratic probability zero gate — `prob = (distance/10)²`
+- `checkWordCountGate()`: 5th-power probability zero gate — `pass = min((w-90)^5/1000, (110-w)^5/1000) %`
+- In-range zero: sardonic "規定範囲内ですが総合的な判定により語数規定違反" message
+- Gate survival: congratulatory "語数フィルターを運良く突破しました！" message
 - `makeZeroScore()`: generates fake "word count violation" feedback
-- Vocabulary scoring moved to route.ts: counts AI-identified fancy words from Gemini response
+- Vocabulary scoring in route.ts: counts AI-identified fancy words from Gemini response
+
+### Error Handling
+- Gemini 429 (rate limit) → propagated as 503 with user-friendly message
+- Other Gemini errors → silent fallback to 0-score
 
 ### OG Image API (`/api/og`)
 - Edge runtime, `next/og` ImageResponse
@@ -87,8 +93,9 @@ Single POST endpoint. All scoring logic runs server-side.
 | `GEMINI_API_KEY` | Gemini API authentication | Yes |
 | `RATE_LIMIT_SECRET` | HMAC signing for rate limit cookies | Yes (auto-generated if missing) |
 
-## Cost Model
+## Cost & Security Model
 - Gemini 2.5 Flash-Lite: ~$0.00007/request
-- Rate limit: 20 requests/user/day
-- Response cache reduces duplicate calls
+- Rate limit: cookie + memory-based (20/day), bypassable in incognito
+- Primary cost protection: Gemini API's own RPD quota (project-level)
+- Response cache (SHA-256, 10min TTL) reduces duplicate calls
 - Vercel Hobby: free (serverless functions included)

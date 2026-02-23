@@ -9,13 +9,23 @@
 - Top page OG image (`/api/og-top`) with title and score preview cards
 - SVG favicon (navy "4" badge)
 - `metadataBase` set for absolute OG image URLs
+- Sardonic feedback messages:
+  - Gate survival: "おめでとうございます！あなたは語数フィルターを運良く突破しました！" (green bold)
+  - In-range zero: "語数は規定範囲内ですが、総合的な判定により語数規定違反と判定されました"
+  - Vocabulary report: highlighted in indigo bold
+- Gemini feedback enforced to Japanese
+- Certificate: fixed score table row alignment, text line breaks, year to 2026
 
 ### Scoring Changes
-- Vocabulary: replaced hardcoded word list with AI identification
-  - Gemini identifies pre-1/Grade 1 level vocabulary → code counts and scores
-- Zero gate: switched from step function to quadratic curve
-  - `prob = (|wordCount - 100| / 10)²`
-  - 100 words = 0%, 95/105 = 25%, 90/110 = 100%
+- Vocabulary: replaced hardcoded word list (~100 words) with AI identification
+  - Gemini identifies advanced vocabulary → code counts actual occurrences → score
+- Zero gate: step → quadratic → cubic → 5th-power curve
+  - `pass = min((w-90)^5/1000, (110-w)^5/1000) %`
+  - 100 words = safe, 99/101 = 59%, 95/105 = 3%, 90/110 = 0%
+
+### Security
+- Gemini 429 handled gracefully → 503 with user-friendly message
+- Primary cost protection relies on Gemini API's own RPD quota
 
 ### Infrastructure
 - Vercel project renamed: `eiken-deploy` → `eiken-summary-sim`
@@ -72,7 +82,7 @@
 - Rate limiting: HMAC-signed cookie + server-side memory counter (20/day, JST)
 - Input validation: JSON type, 16KB size limit, 4000 char answer limit, origin check
 - Timing-safe HMAC comparison
-- Gemini: maxOutputTokens=220, JSON response mode, 10min response cache
+- Gemini: maxOutputTokens=350, JSON response mode, 10min response cache
 
 ### Infrastructure
 - Deployed to Vercel: https://eiken-summary-sim.vercel.app
