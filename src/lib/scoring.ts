@@ -14,12 +14,12 @@ export function countWords(text: string): number {
 }
 
 // Returns probability of getting 0/0/0/0 based on word count
-// Cubic pass rate: w<=100 → (w-90)^3/10 %, w>=100 → (110-w)^3/10 %
-// 100語=0%, 99語=27%, 95語=87.5%, 90語=100%
+// 5th-power pass rate: min((w-90)^5/1000, (110-w)^5/1000) %, capped at 100
+// 100 = safe, 99/101 = 41% zero, 95/105 = 97% zero, 90/110 = 100% zero
 function getZeroProbability(wordCount: number): number {
   if (wordCount < 90 || wordCount > 110) return 1.0;
-  const d = wordCount <= 100 ? wordCount - 90 : 110 - wordCount;
-  const passRate = (d ** 3) / 1000;
+  const passPercent = Math.min((wordCount - 90) ** 5 / 1000, (110 - wordCount) ** 5 / 1000);
+  const passRate = Math.min(passPercent, 100) / 100;
   return 1 - passRate;
 }
 
