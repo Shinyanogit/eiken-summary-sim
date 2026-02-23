@@ -3,7 +3,7 @@ import crypto from "crypto";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const MODEL_NAME = "gemini-2.5-flash-lite";
-const MAX_OUTPUT_TOKENS = 220;
+const MAX_OUTPUT_TOKENS = 350;
 const MAX_FEEDBACK_CHARS = 700;
 const CACHE_TTL_MS = 10 * 60 * 1000;
 const CACHE_MAX_ENTRIES = 300;
@@ -12,11 +12,12 @@ interface GeminiScoreResponse {
   grammar: number;
   vocabulary: number;
   feedback: string;
+  fancyWords?: string[];
 }
 
 interface CachedValue {
   expiresAt: number;
-  value: GeminiScoreResponse & { content?: number; organization?: number };
+  value: GeminiScoreResponse & { content?: number; organization?: number; fancyWords?: string[] };
 }
 
 type ScoreCache = Map<string, CachedValue>;
@@ -34,10 +35,14 @@ const JOKE_PROMPT = [
   "You are a parody English grader.",
   "Score ONLY grammar from 0 to 8.",
   "Ignore topic relevance, repetition, and meaning.",
+  "Also list every advanced/sophisticated vocabulary word (英検準1級〜1級レベル) found in the text.",
+  "Include words like: however, therefore, significant, contribute, phenomenon, implement, facilitate, comprehensive, etc.",
+  "Do NOT include basic words (is, have, make, good, bad, important, etc.).",
+  "Return each word exactly as it appears in the text (preserve original form).",
   "Write Japanese feedback in exactly 2 lines separated by \\n:",
   "Line1: grammar finding.",
   "Line2: note that content relevance is not graded.",
-  "Return JSON only: {\"grammar\": number, \"feedback\": string}",
+  "Return JSON only: {\"grammar\": number, \"fancyWords\": string[], \"feedback\": string}",
 ].join("\n");
 
 const SERIOUS_PROMPT = [
@@ -119,10 +124,14 @@ export async function scoreWithGemini(
     }
 
     const parsed = JSON.parse(jsonText) as Record<string, unknown>;
+    const fancyWords = !serious && Array.isArray(parsed.fancyWords)
+      ? (parsed.fancyWords as unknown[]).filter((w): w is string => typeof w === "string")
+      : undefined;
     const response = {
       grammar: toScore(parsed.grammar),
       vocabulary: serious ? toScore(parsed.vocabulary) : 0,
       feedback: sanitizeFeedback(parsed.feedback),
+      ...(fancyWords && { fancyWords }),
       ...(serious && {
         content: toScore(parsed.content),
         organization: toScore(parsed.organization),

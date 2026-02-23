@@ -38,6 +38,7 @@ export default function TestPage() {
         return;
       }
       sessionStorage.setItem("eiken_result", JSON.stringify(data));
+      sessionStorage.setItem("eiken_answer", answer);
       window.location.href = "/result";
     } catch {
       alert("通信エラーが発生しました。");

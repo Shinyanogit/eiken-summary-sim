@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { countWords, countFancyWords, checkWordCountGate, makeZeroScore, type ScoreResult } from "@/lib/scoring";
+import { countWords, checkWordCountGate, makeZeroScore, type ScoreResult } from "@/lib/scoring";
 import { scoreWithGemini } from "@/lib/gemini";
 import { consumeRateLimit } from "@/lib/rate-limit";
 import { questions } from "@/lib/questions";
@@ -113,18 +113,23 @@ export async function POST(request: NextRequest) {
   const content = Math.max(0, 8 - distance);
   const organization = geminiResult.grammar;
 
-  const vocab = countFancyWords(answer);
-  const vocabReport =
-    vocab.found.length > 0 ? vocab.found.map((f) => `「${f.word}」×${f.count}`).join(" ") : "なし";
-  const vocabHits = vocab.found.reduce((sum, item) => sum + item.count, 0);
-  const vocabFeedback = `語彙: 高級語彙を${vocabHits}個検出 [${vocabReport}] → ${vocab.score}/8点\n※重複出現はそれぞれ加点対象です。`;
+  const fancyWords = geminiResult.fancyWords ?? [];
+  const vocabHits = fancyWords.length;
+  let vocabScore = 0;
+  if (vocabHits >= 10) vocabScore = 8;
+  else if (vocabHits >= 6) vocabScore = 6;
+  else if (vocabHits >= 3) vocabScore = 4;
+  else if (vocabHits >= 1) vocabScore = 2;
+
+  const vocabReport = fancyWords.length > 0 ? fancyWords.map((w) => `「${w}」`).join(" ") : "なし";
+  const vocabFeedback = `語彙: 高級語彙を${vocabHits}個検出 [${vocabReport}] → ${vocabScore}/8点`;
 
   const feedback = [geminiResult.feedback, vocabFeedback].filter(Boolean).join("\n");
 
   const result: ScoreResult = {
     content,
     organization,
-    vocabulary: vocab.score,
+    vocabulary: vocabScore,
     grammar: geminiResult.grammar,
     feedback,
     wordCount,

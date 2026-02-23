@@ -22,6 +22,7 @@ const PASS_THRESHOLD = 24;
 
 export default function ResultPage() {
   const [result, setResult] = useState<Result | null>(null);
+  const [answer, setAnswer] = useState("");
   const [name, setName] = useState("");
   const [effectPlayed, setEffectPlayed] = useState(false);
   const [showResult, setShowResult] = useState(false);
@@ -32,6 +33,10 @@ export default function ResultPage() {
     const stored = sessionStorage.getItem("eiken_result");
     if (stored) {
       setResult(JSON.parse(stored));
+    }
+    const storedAnswer = sessionStorage.getItem("eiken_answer");
+    if (storedAnswer) {
+      setAnswer(storedAnswer);
     }
   }, []);
 
@@ -187,6 +192,21 @@ export default function ResultPage() {
           serious={result.serious}
         />
       </div>
+
+      {/* Answer */}
+      {answer && (
+        <div className="mb-8">
+          <div
+            className="text-sm font-medium mb-2"
+            style={{ color: "var(--eiken-navy)" }}
+          >
+            あなたの解答
+          </div>
+          <div className="p-4 bg-gray-50 border border-gray-200 rounded text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+            {answer}
+          </div>
+        </div>
+      )}
 
       {/* Feedback */}
       {result.feedback && (
