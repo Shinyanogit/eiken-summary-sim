@@ -39,16 +39,15 @@ const JOKE_PROMPT = [
   "Include words like: however, therefore, significant, contribute, phenomenon, implement, facilitate, comprehensive, etc.",
   "Do NOT include basic words (is, have, make, good, bad, important, etc.).",
   "Return each word exactly as it appears in the text (preserve original form).",
-  "Write Japanese feedback in exactly 2 lines separated by \\n:",
-  "Line1: grammar finding.",
-  "Line2: note that content relevance is not graded.",
+  "feedbackは必ず日本語で書いてください。",
+  "feedback内容: 1行目は文法の所見、2行目は「内容の関連性は採点対象外です」と記載。2行を\\nで区切る。",
   "Return JSON only: {\"grammar\": number, \"fancyWords\": string[], \"feedback\": string}",
 ].join("\n");
 
 const SERIOUS_PROMPT = [
   "Evaluate this English summary.",
   "Return integer scores (0-8): grammar, vocabulary, content, organization.",
-  "Also return Japanese feedback in 1-2 sentences.",
+  "feedbackは必ず日本語で、1-2文で書いてください。",
   "Return JSON only:",
   "{\"grammar\":number,\"vocabulary\":number,\"content\":number,\"organization\":number,\"feedback\":string}",
 ].join("\n");
