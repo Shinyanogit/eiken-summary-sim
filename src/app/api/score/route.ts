@@ -107,6 +107,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(result);
   }
 
+  const gateProb = wordCount === 100 ? 0 : ((Math.abs(wordCount - 100) / 10) ** 2) * 100;
+  const gateCongrats = gateProb > 0
+    ? `おめでとうございます！あなたは語数フィルター（突破率${Math.round(100 - gateProb)}%）を運良く突破しました！\n`
+    : "";
+
   const geminiResult = await scoreWithGemini(answer, false);
 
   const distance = Math.abs(wordCount - 100);
@@ -137,7 +142,7 @@ export async function POST(request: NextRequest) {
     : "なし";
   const vocabFeedback = `語彙: 高級語彙を${vocabHits}個検出 [${vocabReport}] → ${vocabScore}/8点\n※重複出現はそれぞれ加点対象です。`;
 
-  const feedback = [geminiResult.feedback, vocabFeedback].filter(Boolean).join("\n");
+  const feedback = [gateCongrats + geminiResult.feedback, vocabFeedback].filter(Boolean).join("\n");
 
   const result: ScoreResult = {
     content,
