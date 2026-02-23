@@ -14,11 +14,13 @@ export function countWords(text: string): number {
 }
 
 // Returns probability of getting 0/0/0/0 based on word count
-// Quadratic: prob = (distance/10)^2  →  100語=0%, 95語=25%, 90語=100%
+// Cubic pass rate: w<=100 → (w-90)^3/10 %, w>=100 → (110-w)^3/10 %
+// 100語=0%, 99語=27%, 95語=87.5%, 90語=100%
 function getZeroProbability(wordCount: number): number {
   if (wordCount < 90 || wordCount > 110) return 1.0;
-  const distance = Math.abs(wordCount - 100);
-  return (distance / 10) ** 2;
+  const d = wordCount <= 100 ? wordCount - 90 : 110 - wordCount;
+  const passRate = (d ** 3) / 1000;
+  return 1 - passRate;
 }
 
 export function checkWordCountGate(wordCount: number): { passed: boolean; reason?: string } {
