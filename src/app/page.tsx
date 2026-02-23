@@ -173,6 +173,9 @@ export default function TestPage() {
             {submitting && (
               <span className="text-sm text-gray-500">AI採点を実行しています...</span>
             )}
+            {!seriousMode && !submitting && (
+              <span className="text-sm text-gray-500">※ AIは真面目に採点しません。</span>
+            )}
           </div>
         </div>
       </div>
