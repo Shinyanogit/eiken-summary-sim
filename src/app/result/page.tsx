@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import ScoreTable from "@/components/ScoreTable";
 import ShareButton from "@/components/ShareButton";
 import Certificate, { type CertificateHandle } from "@/components/Certificate";
+import Confetti from "@/components/Confetti";
+import FailEffect from "@/components/FailEffect";
+import { playFanfare, playFailSound } from "@/lib/sounds";
 
 interface Result {
   content: number;
@@ -20,7 +23,10 @@ const PASS_THRESHOLD = 24;
 export default function ResultPage() {
   const [result, setResult] = useState<Result | null>(null);
   const [name, setName] = useState("");
+  const [effectPlayed, setEffectPlayed] = useState(false);
+  const [showResult, setShowResult] = useState(false);
   const certRef = useRef<CertificateHandle>(null);
+  const soundPlayed = useRef(false);
 
   useEffect(() => {
     const stored = sessionStorage.getItem("eiken_result");
@@ -28,6 +34,23 @@ export default function ResultPage() {
       setResult(JSON.parse(stored));
     }
   }, []);
+
+  const handleReveal = useCallback(() => {
+    if (!result || effectPlayed) return;
+    setEffectPlayed(true);
+    setShowResult(true);
+
+    // Play sound (requires user gesture on mobile - this click satisfies that)
+    if (!soundPlayed.current) {
+      soundPlayed.current = true;
+      const total = result.content + result.organization + result.vocabulary + result.grammar;
+      if (total >= PASS_THRESHOLD) {
+        playFanfare();
+      } else {
+        playFailSound();
+      }
+    }
+  }, [result, effectPlayed]);
 
   if (!result) {
     return (
@@ -52,8 +75,57 @@ export default function ResultPage() {
     day: "numeric",
   });
 
+  // Pre-reveal: dramatic "reveal" button
+  if (!showResult) {
+    return (
+      <div className="bg-white border border-gray-200 p-8 md:p-12 text-center">
+        <div className="text-sm text-gray-500 mb-6">
+          <a href="/" className="hover:underline" style={{ color: "var(--eiken-navy)" }}>
+            ホーム
+          </a>
+          <span className="mx-2">&gt;</span>
+          <span>採点結果</span>
+        </div>
+
+        <h1
+          className="text-xl font-bold mb-8 pb-3 border-b-2"
+          style={{ borderColor: "var(--eiken-navy)", color: "var(--eiken-navy)" }}
+        >
+          採点結果
+        </h1>
+
+        <div className="py-12">
+          <p className="text-gray-600 mb-6 text-lg">採点が完了しました</p>
+          <button
+            onClick={handleReveal}
+            className="reveal-button px-10 py-4 text-white text-lg font-bold rounded-lg shadow-lg transition-all hover:scale-105 active:scale-95"
+            style={{
+              background: "linear-gradient(135deg, var(--eiken-navy), #1a5ab8)",
+              boxShadow: "0 4px 20px rgba(0,51,153,0.4)",
+            }}
+          >
+            結果を見る
+          </button>
+          <style>{`
+            .reveal-button {
+              animation: revealPulse 2s ease-in-out infinite;
+            }
+            @keyframes revealPulse {
+              0%, 100% { box-shadow: 0 4px 20px rgba(0,51,153,0.4); }
+              50% { box-shadow: 0 4px 30px rgba(0,51,153,0.7), 0 0 60px rgba(0,51,153,0.2); }
+            }
+          `}</style>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white border border-gray-200 p-8 md:p-12">
+      {/* Effects */}
+      {passed && <Confetti />}
+      {!passed && <FailEffect />}
+
       {/* Breadcrumb */}
       <div className="text-sm text-gray-500 mb-6">
         <a href="/" className="hover:underline" style={{ color: "var(--eiken-navy)" }}>
@@ -75,14 +147,34 @@ export default function ResultPage() {
       {/* Pass/Fail badge */}
       <div className="mb-6">
         {passed ? (
-          <span className="inline-block px-4 py-1 text-sm font-bold rounded bg-amber-100 text-amber-800 border border-amber-300">
+          <span
+            className="pass-badge inline-block px-4 py-1 text-sm font-bold rounded bg-amber-100 text-amber-800 border border-amber-300"
+          >
             合格（{total}/32点）
           </span>
         ) : (
-          <span className="inline-block px-4 py-1 text-sm font-bold rounded bg-gray-100 text-gray-600 border border-gray-300">
+          <span
+            className="fail-badge inline-block px-4 py-1 text-sm font-bold rounded bg-gray-100 text-gray-600 border border-gray-300"
+          >
             不合格（{total}/32点）
           </span>
         )}
+        <style>{`
+          .pass-badge {
+            animation: passBadgeGlow 1.5s ease-in-out 3;
+          }
+          @keyframes passBadgeGlow {
+            0%, 100% { box-shadow: 0 0 0 rgba(255,215,0,0); }
+            50% { box-shadow: 0 0 20px rgba(255,215,0,0.6), 0 0 40px rgba(255,215,0,0.3); }
+          }
+          .fail-badge {
+            animation: failBadgePulse 0.6s ease-in-out 2;
+          }
+          @keyframes failBadgePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+          }
+        `}</style>
       </div>
 
       {/* Score Table */}

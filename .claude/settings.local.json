@@ -9,7 +9,8 @@
       "Skill(v0)",
       "Bash(test:*)",
       "Bash(git init:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(cat:*)"
     ]
   }
 }
