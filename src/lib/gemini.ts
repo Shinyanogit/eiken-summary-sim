@@ -144,7 +144,14 @@ export async function scoreWithGemini(
     });
 
     return response;
-  } catch {
+  } catch (e: unknown) {
+    const status = (e as { status?: number })?.status
+      ?? (e as { httpStatusCode?: number })?.httpStatusCode;
+    if (status === 429) {
+      const err = new Error("RATE_LIMITED");
+      (err as Error & { status: number }).status = 429;
+      throw err;
+    }
     return {
       grammar: 0,
       vocabulary: 0,

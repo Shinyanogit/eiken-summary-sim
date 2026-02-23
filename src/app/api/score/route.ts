@@ -88,7 +88,15 @@ export async function POST(request: NextRequest) {
   }
 
   if (serious) {
-    const geminiResult = await scoreWithGemini(answer, true);
+    let geminiResult;
+    try {
+      geminiResult = await scoreWithGemini(answer, true);
+    } catch (e) {
+      if ((e as Error & { status?: number }).status === 429) {
+        return NextResponse.json({ error: "採点サーバーが混み合っています。しばらく時間をおいてから再度お試しください。" }, { status: 503 });
+      }
+      throw e;
+    }
     const result: ScoreResult = {
       content: geminiResult.content ?? 0,
       organization: geminiResult.organization ?? 0,
@@ -109,7 +117,15 @@ export async function POST(request: NextRequest) {
 
   const gateCongrats = `おめでとうございます！あなたは語数フィルターを運良く突破しました！\n`;
 
-  const geminiResult = await scoreWithGemini(answer, false);
+  let geminiResult;
+  try {
+    geminiResult = await scoreWithGemini(answer, false);
+  } catch (e) {
+    if ((e as Error & { status?: number }).status === 429) {
+      return NextResponse.json({ error: "採点サーバーが混み合っています。しばらく時間をおいてから再度お試しください。" }, { status: 503 });
+    }
+    throw e;
+  }
 
   const distance = Math.abs(wordCount - 100);
   const content = Math.max(0, 8 - distance);
