@@ -15,6 +15,7 @@ const notoSerif = Noto_Serif({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://eiken-summary-sim.vercel.app"),
   title: "英険1級 要約シュミレーター",
   description: "あなたは0点を回避できるか？英険1級 英文要約問題シュミレーター",
   openGraph: {
