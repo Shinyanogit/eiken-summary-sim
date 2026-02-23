@@ -289,13 +289,8 @@ const Certificate = forwardRef<CertificateHandle, CertificateProps>(function Cer
                   borderBottom: "1px solid #333",
                 }}
               />
-            )}
-            <br />
-            has successfully passed the above level of the Eiken
-            <br />
-            Test in Summary Writing Proficiency, conducted by
-            <br />
-            the Eiken Summary Simulator Commission.
+            )}{" "}
+            has successfully passed the above level of the Eiken Test in Summary Writing Proficiency, conducted by the Eiken Summary Simulator Commission.
           </div>
 
           {/* Score table */}
