@@ -6,6 +6,7 @@ import ShareButton from "@/components/ShareButton";
 import Certificate, { type CertificateHandle } from "@/components/Certificate";
 import Confetti from "@/components/Confetti";
 import FailEffect from "@/components/FailEffect";
+import InquiryButton from "@/components/InquiryButton";
 import { playFanfare, playFailSound } from "@/lib/sounds";
 
 interface Result {
@@ -229,6 +230,9 @@ export default function ResultPage() {
           })}
         </div>
       )}
+
+      {/* Inquiry button (joke mode only) */}
+      {!result.serious && <InquiryButton />}
 
       {/* Certificate (pass only) */}
       {passed && (
