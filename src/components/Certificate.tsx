@@ -308,9 +308,9 @@ const Certificate = forwardRef<CertificateHandle, CertificateProps>(function Cer
               backgroundColor: "#fff",
             }}
           >
-            <thead>
+            <tbody>
               <tr>
-                <th
+                <td
                   rowSpan={2}
                   style={{
                     backgroundColor: "#8894b6",
@@ -321,14 +321,16 @@ const Certificate = forwardRef<CertificateHandle, CertificateProps>(function Cer
                     width: "15%",
                     fontSize: "11px",
                     lineHeight: 1.4,
+                    textAlign: "center",
+                    verticalAlign: "middle",
                   }}
                 >
                   Eiken
                   <br />
                   SCORE
-                </th>
+                </td>
                 {["Content", "Organization", "Vocabulary", "Grammar"].map((h) => (
-                  <th
+                  <td
                     key={h}
                     style={{
                       backgroundColor: "#e0e4f0",
@@ -341,11 +343,9 @@ const Certificate = forwardRef<CertificateHandle, CertificateProps>(function Cer
                     }}
                   >
                     {h}
-                  </th>
+                  </td>
                 ))}
               </tr>
-            </thead>
-            <tbody>
               <tr>
                 {[content, organization, vocabulary, grammar].map((s, i) => (
                   <td
@@ -375,6 +375,7 @@ const Certificate = forwardRef<CertificateHandle, CertificateProps>(function Cer
                     padding: "8px",
                     fontWeight: "bold",
                     fontSize: "11px",
+                    textAlign: "center",
                   }}
                 >
                   TOTAL
