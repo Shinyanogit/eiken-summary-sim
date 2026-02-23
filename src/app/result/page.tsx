@@ -212,9 +212,21 @@ export default function ResultPage() {
       {result.feedback && (
         <div className="mb-8 p-4 bg-gray-50 border border-gray-200 rounded text-sm text-gray-700 leading-relaxed">
           <div className="font-medium mb-1 text-gray-900">フィードバック</div>
-          {result.feedback.split("\n").map((line, i) => (
-            <p key={i} className={i > 0 ? "mt-1" : ""}>{line}</p>
-          ))}
+          {result.feedback.split("\n").map((line, i) => {
+            const isGate = line.startsWith("おめでとう");
+            const isVocab = line.startsWith("語彙:");
+            const isVocabNote = line.startsWith("※重複");
+            if (isGate) {
+              return <p key={i} className={`font-bold text-green-600 ${i > 0 ? "mt-1" : ""}`}>{line}</p>;
+            }
+            if (isVocab) {
+              return <p key={i} className={`font-bold text-indigo-600 ${i > 0 ? "mt-1" : ""}`}>{line}</p>;
+            }
+            if (isVocabNote) {
+              return <p key={i} className={`text-xs text-indigo-400 ${i > 0 ? "mt-1" : ""}`}>{line}</p>;
+            }
+            return <p key={i} className={i > 0 ? "mt-1" : ""}>{line}</p>;
+          })}
         </div>
       )}
 
