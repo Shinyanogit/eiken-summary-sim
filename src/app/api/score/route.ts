@@ -113,16 +113,29 @@ export async function POST(request: NextRequest) {
   const content = Math.max(0, 8 - distance);
   const organization = geminiResult.grammar;
 
+  // AI identifies fancy words (unique), code counts actual occurrences
   const fancyWords = geminiResult.fancyWords ?? [];
-  const vocabHits = fancyWords.length;
+  const answerLower = answer.toLowerCase();
+  const answerTokens = answerLower.split(/\s+/).map((w) => w.replace(/[^a-z]/g, ""));
+  const vocabCounts: { word: string; count: number }[] = [];
+  let vocabHits = 0;
+  for (const word of fancyWords) {
+    const count = answerTokens.filter((t) => t === word.toLowerCase()).length;
+    if (count > 0) {
+      vocabCounts.push({ word, count });
+      vocabHits += count;
+    }
+  }
   let vocabScore = 0;
   if (vocabHits >= 10) vocabScore = 8;
   else if (vocabHits >= 6) vocabScore = 6;
   else if (vocabHits >= 3) vocabScore = 4;
   else if (vocabHits >= 1) vocabScore = 2;
 
-  const vocabReport = fancyWords.length > 0 ? fancyWords.map((w) => `「${w}」`).join(" ") : "なし";
-  const vocabFeedback = `語彙: 高級語彙を${vocabHits}個検出 [${vocabReport}] → ${vocabScore}/8点`;
+  const vocabReport = vocabCounts.length > 0
+    ? vocabCounts.map((v) => `「${v.word}」×${v.count}`).join(" ")
+    : "なし";
+  const vocabFeedback = `語彙: 高級語彙を${vocabHits}個検出 [${vocabReport}] → ${vocabScore}/8点\n※重複出現はそれぞれ加点対象です。`;
 
   const feedback = [geminiResult.feedback, vocabFeedback].filter(Boolean).join("\n");
 
