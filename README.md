@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 英険1級 要約シュミレーター
 
-## Getting Started
+英検1級「要約問題0点騒動」を風刺するジョークWebアプリ。試験形式を本物に忠実に再現しつつ、採点ロジックが不条理であることがジョーク。
 
-First, run the development server:
+> **「英険」は架空の検定であり、英検®とは一切関係ありません。**
+
+## Live Demo
+
+[https://eiken-summary-sim.vercel.app](https://eiken-summary-sim.vercel.app)
+
+## Tech Stack
+
+- **Framework**: Next.js (App Router) + React + TypeScript
+- **Styling**: Tailwind CSS
+- **AI**: Gemini 2.5 Flash-Lite (`@google/generative-ai`)
+- **Image**: html2canvas-pro (certificate PNG generation)
+- **Hosting**: Vercel
+
+## Features
+
+- 英検1級の要約問題を再現した試験UI
+- Gemini AIによる文法採点
+- 不条理な採点ロジック（ジョークモード）
+- 真面目な採点モード（設定から切り替え可能）
+- 合格証明書の生成・ダウンロード
+- X (Twitter) シェア機能
+- レート制限 (20回/日)
+
+## Development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Environment Variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+GEMINI_API_KEY=...          # Gemini API key
+RATE_LIMIT_SECRET=...       # HMAC signing secret for rate limit cookies
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## License
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
