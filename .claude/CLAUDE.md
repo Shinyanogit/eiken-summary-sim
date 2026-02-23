@@ -25,6 +25,7 @@ src/
 │   ├── Certificate.tsx     # Certificate (UnifrakturMaguntia font, forwardRef)
 │   ├── ScoreTable.tsx      # 4-category score table (rowspan layout)
 │   ├── ShareButton.tsx     # X share (Web Share API + fallback)
+│   ├── InquiryButton.tsx   # Bureaucratic inquiry parody (joke mode only)
 │   └── WordCounter.tsx     # Word count display
 └── lib/
     ├── gemini.ts           # Gemini API wrapper (server-only, cached)
@@ -47,6 +48,12 @@ This is the core joke. DO NOT "fix" or "improve" this to be more fair.
 ## Scoring Logic (SERIOUS mode - settings toggle)
 - Geminiが4項目すべてを真面目に採点
 - 設定ギアアイコン → 「真面目に採点する」チェックで有効化
+
+## Inquiry Button (bureaucratic parody)
+- Result page has "採点結果に関するお問い合わせ" button (joke mode only)
+- Click → 1.5s loading ("お問い合わせを受け付けました...") → template reply
+- Reply mimics real Eiken Foundation's dismissive responses: "厳正かつ客観的な評価を厳密な審査体制のもとで行っております"
+- One-shot interaction: button becomes "お問い合わせ済み" after use
 
 ## Key Design Decisions
 - **ブラックボックス感がジョーク**: 特別なメッセージや演出は不要、淡々とスコアを出す
