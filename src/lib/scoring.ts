@@ -26,12 +26,15 @@ export function checkWordCountGate(wordCount: number): { passed: boolean; reason
     return { passed: false, reason: "解答が入力されていません。" };
   }
   if (wordCount < 90 || wordCount > 110) {
-    return { passed: false, reason: undefined };
+    return { passed: false };
   }
   const prob = getZeroProbability(wordCount);
   const roll = Math.random();
   if (roll < prob) {
-    return { passed: false, reason: undefined };
+    return {
+      passed: false,
+      reason: `語数は規定範囲内（${wordCount}語）ですが、総合的な判定により語数規定違反と判定されました。\n※ この判定は確率的なものであり、同じ解答でも結果が異なる場合があります。\n※ 異議申し立ては受け付けておりません。`,
+    };
   }
   return { passed: true };
 }
