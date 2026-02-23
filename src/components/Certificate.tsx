@@ -144,7 +144,7 @@ const Certificate = forwardRef<CertificateHandle, CertificateProps>(function Cer
                   className="text-sm"
                   style={{ color: "#555", borderBottom: "1px solid #999", paddingBottom: 1 }}
                 >
-                  2025–1
+                  2026–1
                 </span>
                 <span
                   className="text-5xl font-bold mt-1"
