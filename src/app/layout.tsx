@@ -16,16 +16,18 @@ const notoSerif = Noto_Serif({
 
 export const metadata: Metadata = {
   title: "英険1級 要約シュミレーター",
-  description: "英険1級 英文要約問題シュミレーター",
+  description: "あなたは0点を回避できるか？英険1級 英文要約問題シュミレーター",
   openGraph: {
     title: "英険1級 要約シュミレーター",
     description: "あなたは0点を回避できるか？英険1級 英文要約問題シュミレーター",
     type: "website",
+    images: [{ url: "/api/og-top", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "英険1級 要約シュミレーター",
     description: "あなたは0点を回避できるか？",
+    images: ["/api/og-top"],
   },
 };
 
