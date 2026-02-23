@@ -107,10 +107,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(result);
   }
 
-  const gateProb = wordCount === 100 ? 0 : ((Math.abs(wordCount - 100) / 10) ** 2) * 100;
-  const gateCongrats = gateProb > 0
-    ? `おめでとうございます！あなたは語数フィルター（突破率${Math.round(100 - gateProb)}%）を運良く突破しました！\n`
-    : "";
+  const gateCongrats = `おめでとうございます！あなたは語数フィルターを運良く突破しました！\n`;
 
   const geminiResult = await scoreWithGemini(answer, false);
 
