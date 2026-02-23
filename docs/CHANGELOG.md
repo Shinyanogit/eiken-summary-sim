@@ -1,5 +1,29 @@
 # Changelog
 
+## 2026-02-23 - UX Polish & Scoring Overhaul
+
+### Features
+- Result page now displays user's answer text
+- Joke/serious mode toggle switch next to submit button
+- "※ AIは真面目に採点しません。" disclaimer in joke mode
+- Top page OG image (`/api/og-top`) with title and score preview cards
+- SVG favicon (navy "4" badge)
+- `metadataBase` set for absolute OG image URLs
+
+### Scoring Changes
+- Vocabulary: replaced hardcoded word list with AI identification
+  - Gemini identifies pre-1/Grade 1 level vocabulary → code counts and scores
+- Zero gate: switched from step function to quadratic curve
+  - `prob = (|wordCount - 100| / 10)²`
+  - 100 words = 0%, 95/105 = 25%, 90/110 = 100%
+
+### Infrastructure
+- Vercel project renamed: `eiken-deploy` → `eiken-summary-sim`
+- Domain unified to `eiken-summary-sim.vercel.app`
+- SSO Protection disabled for public access
+
+---
+
 ## 2026-02-23 - OG Image Share System
 
 ### Features
@@ -29,7 +53,7 @@
   - Certificate generation for passing scores
   - X share button with #英険要約シュミレーター #英検 hashtags
 - Joke scoring logic:
-  - Probability-based word count gate (100 words = 5% zero, 90/110 = 90% zero)
+  - Probability-based word count gate (quadratic curve, 100 words = safe)
   - Content score = word count proximity (not actual content)
   - Organization = grammar copy
   - Vocabulary = server-side fancy word counting (duplicates OK)

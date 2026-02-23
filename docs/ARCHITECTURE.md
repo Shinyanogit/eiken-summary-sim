@@ -18,12 +18,12 @@
 [API Route] → Input validation (JSON, size, type, origin)
             → Rate limit check (cookie + memory, 20/day)
             → Word count gate (joke mode only)
-            → Gemini API call (grammar scoring)
-            → Server-side fancy word counting
+            → Gemini API call (grammar + fancy word identification)
+            → Code counts AI-identified fancy words → vocabulary score
             → Score composition
             ↓ Response { content, organization, vocabulary, grammar, feedback, wordCount }
-[User] → sessionStorage → result/page.tsx
-         → ScoreTable, Feedback, Certificate (if passed), ShareButton
+[User] → sessionStorage (result + answer) → result/page.tsx
+         → Answer display, ScoreTable, Feedback, Certificate (if passed), ShareButton
 ```
 
 ## Server-Side Components
@@ -33,9 +33,10 @@ Single POST endpoint. All scoring logic runs server-side.
 
 ### Gemini Integration (`lib/gemini.ts`)
 - `server-only` guarded
-- Two prompts: JOKE (grammar only) and SERIOUS (4-category)
+- Two prompts: JOKE (grammar + fancy word identification) and SERIOUS (4-category)
+- JOKE prompt returns `{ grammar, fancyWords: string[], feedback }`
 - Response cache: SHA-256 keyed, 10min TTL, max 300 entries
-- maxOutputTokens: 220, JSON response mode
+- maxOutputTokens: 350, JSON response mode
 
 ### Rate Limiting (`lib/rate-limit.ts`)
 - `server-only` guarded
@@ -46,9 +47,9 @@ Single POST endpoint. All scoring logic runs server-side.
 
 ### Scoring (`lib/scoring.ts`)
 - `countWords()`: whitespace split
-- `checkWordCountGate()`: probability-based zero gate
-- `countFancyWords()`: server-side, duplicates counted, ~60 word list
+- `checkWordCountGate()`: quadratic probability zero gate — `prob = (distance/10)²`
 - `makeZeroScore()`: generates fake "word count violation" feedback
+- Vocabulary scoring moved to route.ts: counts AI-identified fancy words from Gemini response
 
 ### OG Image API (`/api/og`)
 - Edge runtime, `next/og` ImageResponse
@@ -75,6 +76,10 @@ Single POST endpoint. All scoring logic runs server-side.
 - Mobile: Web Share API with certificate PNG
 - PC: `about:blank` window pre-opened → X intent URL fallback
 - AbortError (user cancel) handled gracefully
+
+### Top Page OG Image (`/api/og-top`)
+- Edge runtime, static OG image for homepage
+- Title, tagline "あなたは0点を回避できるか？", score preview cards with "?"
 
 ## Environment Variables
 | Variable | Purpose | Required |
